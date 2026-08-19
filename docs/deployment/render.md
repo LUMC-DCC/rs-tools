@@ -1,0 +1,134 @@
+# Deploying on Render
+
+Render builds the image from this repository and redeploys on every push, so the running service
+tracks `main` without a manual step. The [Blueprint](https://render.com/docs/infrastructure-as-code)
+at `render.yaml` declares the web service and its Key Value store.
+
+This guide assumes no prior deployment experience.
+
+## What you get
+
+| Piece | What it is |
+| --- | --- |
+| Web service | The container from `Dockerfile`: FastAPI plus the compiled interface |
+| Key Value | Render's Redis-compatible store, holding workspaces and rate-limit counters |
+
+Both fit on Render's free tier, with these limitations:
+
+- A free service **sleeps after 15 minutes without traffic**, and the next request takes about a
+  minute while it wakes. Use a paid service for latency-sensitive deployments.
+- A free Key Value store keeps nothing on disk and is wiped whenever it restarts. That suits this
+  application, whose workspaces are temporary and expire on their own anyway, but it does mean a
+  restart discards every open workspace.
+
+## 1. Push the Blueprint
+
+Render reads `render.yaml` from GitHub, not from your working copy, so it has to be on the branch
+you deploy before anything else works:
+
+```bash
+git push origin main
+```
+
+## 2. Pin the repository template
+
+Copier runs the template's finalization tasks as real code inside the container. With
+`RS_TOOLS_REPOSITORY_TEMPLATE_REVISION` left at `main`, every repository generation fetches and
+executes whatever is on that branch at that moment, so anyone who can push to the template
+repository can run code in your production service.
+
+For a public deployment, tag a reviewed revision of
+[rs-repo-templates](https://github.com/LUMC-DCC/rs-repo-templates) and set the variable to that tag
+rather than a branch. Review each revision change as a release step. See the
+[security boundaries](production.md#security-boundaries).
+
+## 3. Create the Blueprint
+
+1. Sign in at [dashboard.render.com](https://dashboard.render.com) with the GitHub account that can
+   see `LUMC-DCC/rs-tools`, and authorize Render for that organization.
+2. Choose **Add new** → **Blueprint**.
+3. Pick the `LUMC-DCC/rs-tools` repository. Render reads `render.yaml` and lists the two services.
+4. It prompts for the three GitHub OAuth values marked `sync: false`. Leave them
+   blank for the first deployment. File downloads work without them; configure the
+   values after Render assigns the service URL.
+5. Select **Apply**. The first build takes several minutes, mostly compiling the frontend and
+   installing Python dependencies.
+
+## 4. Tell the service its own URL
+
+Render assigns the hostname when the service is created, appending a suffix if the name is already
+taken, so the Blueprint cannot name it in advance. It ships with `RS_TOOLS_TRUSTED_HOSTS` set to
+`*.onrender.com`, which matches whichever subdomain you are given while still refusing every other
+host, allowing the first deployment to complete before the exact hostname is known.
+
+Two things remain, and both need the URL that now exists:
+
+1. Open the `rs-tools` service. Its URL is at the top, like `https://rs-tools.onrender.com`.
+2. Under **Environment**, set:
+
+   | Variable | Value | Why |
+   | --- | --- | --- |
+   | `RS_TOOLS_PUBLIC_BASE_URL` | the full URL, `https://` included, no trailing slash | Generated links and the GitHub callback stop depending on the request's own headers, HSTS starts being sent, and GitHub publishing becomes possible at all |
+   | `RS_TOOLS_TRUSTED_HOSTS` | that hostname alone, no scheme | Narrows the wildcard to the one host this service answers on |
+
+3. Save. Render redeploys automatically.
+
+Attaching a custom domain later means revisiting both, since Render then health-checks with the
+custom domain as the `Host` header.
+
+:::{admonition} If every page returns "400 Bad Request"
+:class: tip
+
+`RS_TOOLS_TRUSTED_HOSTS` is refusing the hostname it was reached on, because the value does not
+cover it. Set it back to `*.onrender.com`, confirm the service answers, then narrow it to the exact
+hostname shown at the top of the service page.
+:::
+
+Open the URL. The workspace interface should load, and
+`https://<your-host>/api/health` should return `{"status":"ok"}`.
+
+## 5. Enable GitHub publishing (optional)
+
+Without OAuth configuration, the interface offers downloads but not GitHub
+repository creation.
+
+Follow [GitHub OAuth setup](github.md) to register the OAuth App, using your Render URL for both
+fields:
+
+```text
+Homepage URL:                https://<your-host>
+Authorization callback URL:  https://<your-host>/api/github/callback
+```
+
+Then, in the service's **Environment** tab, fill in the three values left blank earlier:
+
+| Variable | Value |
+| --- | --- |
+| `RS_TOOLS_GITHUB_CLIENT_ID` | the OAuth App's client ID |
+| `RS_TOOLS_GITHUB_CLIENT_SECRET` | a client secret generated on that App |
+| `RS_TOOLS_GITHUB_COOKIE_SECRET` | fresh random bytes: `openssl rand -base64 48` |
+
+The cookie secret is generated by the deployment operator, not GitHub. It encrypts
+the short-lived cookie that holds a user's token. Changing it invalidates open
+GitHub connections.
+
+Render redeploys on save. The callback URL must match the OAuth App exactly, including `https://`.
+
+## Everyday operation
+
+- **Deploys** happen on every push to `main`. Watch progress under **Logs**.
+- **Rollback** to an earlier image from the **Deploys** tab; no rebuild required.
+- **Logs** are the service's stdout. Template rejections and rate-limit warnings appear there.
+- **Configuration** is the full [configuration reference](configuration.md); anything in it can be
+  set as an environment variable in the dashboard.
+
+## Moving beyond the free tier
+
+Change `plan: free` to a paid plan for the web service in `render.yaml`, commit, and Render applies
+it on the next sync. That removes the sleep and gives the container more memory, which matters most
+for repository generation. A paid Key Value plan additionally survives restarts.
+
+Render terminates TLS at its own proxy and forwards the original host and scheme, which the image
+is already configured for. The [production notes](production.md) describe the security boundaries
+that apply to any deployment, Render included — including that the interface loads nothing from a
+third-party host, so visitors' addresses stay between them and this service.

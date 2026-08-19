@@ -1,0 +1,405 @@
+/* The workspace title bar and the metadata editor panel. */
+
+.workspace-titlebar {
+  min-height: var(--workspace-titlebar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: var(--workspace-bottom-gap);
+}
+
+.workspace-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.workspace-heading h1 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: clamp(28px, 2.5vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.back-link {
+  flex: 0 0 auto;
+  color: var(--text);
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.save-indicator {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--subtle);
+  font-size: 11px;
+}
+
+.save-indicator span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+.save-dirty span {
+  background: var(--pending);
+}
+
+.save-saving span {
+  background: var(--accent);
+  animation: pulse 0.8s infinite alternate;
+}
+
+.save-saved span {
+  background: var(--success);
+}
+
+.save-invalid span,
+.save-error span {
+  background: var(--danger);
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.3;
+  }
+}
+
+.editor-panel {
+  min-width: 0;
+  container-name: metadata-panel;
+  container-type: inline-size;
+}
+
+.metadata-back-to-top {
+  width: var(--floating-control-size);
+  height: var(--floating-control-size);
+  position: fixed;
+  z-index: 8;
+  bottom: var(--workspace-bottom-gap);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  background: var(--surface-floating);
+  color: var(--text);
+  box-shadow: var(--shadow-raised);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.metadata-back-to-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.metadata-back-to-top:hover {
+  background: var(--surface-floating-hover);
+  color: var(--accent);
+}
+
+/* Stays put while the form scrolls: the search and the filter are how you get
+   around a form this long, and scrolling back up to reach them defeats them.
+   The parent deliberately keeps the default visible overflow; making it a
+   scroll container would prevent this toolbar from sticking to the page. */
+.editor-toolbar {
+  min-height: var(--panel-header-min-height);
+  position: sticky;
+  top: var(
+    --workspace-viewport-top,
+    calc(var(--site-header-height) + var(--workspace-bottom-gap))
+  );
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: var(--panel-header-padding-y) var(--panel-inline-padding);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--surface-translucent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.editor-heading {
+  min-width: 0;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.editor-toolbar h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.filter-summary {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  display: block;
+  margin: 0;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+.editor-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+/* --- Field search --------------------------------------------------------- */
+
+/* Exactly --control-height-sm, matching the field filter and the Form/Raw JSON
+   toggle beside it, so the three toolbar controls sit on one line. */
+.field-search {
+  flex: 0 0 auto;
+  width: min(var(--panel-search-width), 100%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--control-height-sm);
+  padding: 0 8px 0 10px;
+  border-radius: var(--radius-pill);
+  background: var(--control);
+  color: var(--subtle);
+  transition: background-color 140ms ease;
+}
+
+.field-search:focus-within {
+  background: var(--control-active);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+.field-search svg {
+  flex: 0 0 auto;
+}
+
+/* The wrapper carries the fill and the focus ring, so the input itself is bare.
+   Its own focus ring is switched off too: `:focus-visible` fires for a text
+   input on an ordinary click, not only for keyboard focus, so without this the
+   input drew a ring at the same moment the wrapper drew one around it — two
+   rings, one behind the other. */
+.field-search
+  input[type='search']:not([type='checkbox']):not([type='radio']):not([type='file']) {
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.field-search input:hover,
+.field-search input:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Matches the :not() chain of the global focus-visible rule it overrides:
+   with only `.field-search input:focus-visible`, the global rule's three
+   :not() clauses outweigh this selector's single class, and its ring would
+   keep showing behind the wrapper's. */
+.field-search
+  input:not([type='checkbox']):not([type='radio']):not([type='file']):focus-visible {
+  box-shadow: none;
+}
+
+.field-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--subtle);
+  cursor: pointer;
+}
+
+.field-search-clear:hover {
+  background: var(--control-hover);
+  color: var(--text);
+}
+
+.empty-state {
+  margin: 0;
+  padding: 28px 16px 34px;
+  color: var(--subtle);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.empty-state code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--control);
+  font-size: 11px;
+}
+
+.inline-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.inline-field select {
+  height: var(--control-height-sm);
+  min-height: 0;
+  max-width: 190px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.schema-form,
+.raw-editor-wrap {
+  padding: 6px var(--panel-inline-padding) 14px;
+}
+
+/* In raw mode the metadata panel and the tools scrollport occupy the same
+   available viewport height. The wrapper flexes so toolbar wrapping is
+   accounted for without repeating its height in a calculation. */
+.editor-panel-raw {
+  height: calc(
+    100dvh - var(--workspace-viewport-top, var(--site-header-height)) -
+      var(--workspace-bottom-gap)
+  );
+  display: flex;
+  flex-direction: column;
+}
+
+/* Respond to the metadata panel itself, not the browser window. This also
+   handles a narrow panel created with the workspace resizer on a wide screen. */
+@container metadata-panel (max-width: 700px) {
+  .editor-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--panel-header-stack-gap);
+  }
+
+  .editor-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .inline-field select {
+    max-width: 132px;
+  }
+}
+
+.editor-panel-raw .raw-editor-wrap {
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.editor-panel-raw .raw-json-editor {
+  height: 100%;
+  min-height: 0;
+  resize: none;
+}
+
+@media (max-width: 980px) {
+  .editor-panel-raw {
+    height: auto;
+  }
+
+  .editor-panel-raw .raw-json-editor {
+    min-height: 650px;
+    resize: vertical;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace-titlebar,
+  .workspace-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .workspace-heading h1 {
+    font-size: 30px;
+    white-space: normal;
+  }
+
+  /* Stacked, the toolbar is a fifth of a phone screen. Pinning that much of the
+     view is a worse trade than scrolling back up for the search. */
+  .editor-toolbar {
+    position: static;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .editor-controls {
+    width: 100%;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-field {
+    justify-content: space-between;
+  }
+
+  .inline-field select {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+
+  .field-search {
+    width: 100%;
+  }
+
+  .field-search input {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}

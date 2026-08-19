@@ -1,0 +1,90 @@
+/* Notices and the validation toast. */
+
+.notice {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 11px 12px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.notice-error {
+  background: var(--danger-light);
+  color: var(--danger-text);
+}
+
+.notice-icon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--danger-soft);
+  font-weight: 700;
+}
+
+.notice p {
+  margin: 2px 0 0;
+}
+
+.notice ul {
+  margin: 7px 0 0;
+  padding-left: 16px;
+}
+
+.notice code {
+  font-weight: 650;
+}
+
+.validation-toast {
+  width: min(430px, calc(100% - 28px));
+  position: fixed;
+  z-index: 20;
+  right: 18px;
+  bottom: 18px;
+  padding: 4px 12px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+
+.validation-toast .notice {
+  margin: 0;
+  padding: 11px 24px 4px 0;
+  background: transparent;
+}
+
+.toast-close {
+  width: 27px;
+  height: 27px;
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  right: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--subtle);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.toast-close:hover {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.toast-field-button {
+  margin-left: 34px;
+  background: var(--danger-soft);
+  color: var(--danger-text);
+}
+
+.toast-field-button:hover:not(:disabled) {
+  background: var(--danger-soft-hover);
+}

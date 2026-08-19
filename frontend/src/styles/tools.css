@@ -1,0 +1,300 @@
+/* The tools panel.
+
+   Tools are grouped by what they produce — metadata, documentation, community files, whole
+   repositories — because that is how someone decides which one they want. Each
+   card states its action in full ("Download CITATION.cff") rather than relying
+   on the surrounding heading for meaning. */
+
+.tools-panel {
+  position: sticky;
+  top: var(
+    --workspace-viewport-top,
+    calc(var(--site-header-height) + var(--workspace-bottom-gap))
+  );
+  height: auto;
+  max-height: calc(
+    100dvh - var(--workspace-viewport-top, var(--site-header-height)) -
+      var(--workspace-bottom-gap)
+  );
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: var(--panel-header-padding-y) var(--panel-inline-padding) 24px;
+}
+
+.tools-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.tools-heading-row {
+  min-height: var(--control-height-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.tools-intro {
+  margin: 4px 0 0;
+  color: var(--subtle);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.tool-search {
+  width: min(var(--panel-search-width), 100%);
+}
+
+.tool-activity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  margin-top: 12px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--text);
+  font-size: 11px;
+}
+
+.tool-activity-spinner {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border: 2px solid var(--accent-ring);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.tool-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.tool-group {
+  padding: 16px 2px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.tool-group:last-child {
+  border-bottom: 0;
+}
+
+.tool-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  color: var(--text-strong);
+  cursor: pointer;
+  list-style: none;
+}
+
+.tool-group-header::-webkit-details-marker {
+  display: none;
+}
+
+.tool-group-heading {
+  min-width: 0;
+  margin-right: auto;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.tool-group-count {
+  min-width: 24px;
+  padding: 3px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.tool-group-header > svg {
+  color: var(--subtle);
+  transition: transform 150ms ease;
+}
+
+.tool-group[open] > .tool-group-header > svg {
+  transform: rotate(180deg);
+}
+
+.tool-group-header:hover .tool-group-heading,
+.tool-group-header:hover > svg {
+  color: var(--accent);
+}
+
+.tool-group-description {
+  margin: 6px 0 0;
+  color: var(--subtle);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.tools-empty {
+  margin: 18px 2px;
+  color: var(--subtle);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.tool-group-options {
+  margin-top: 10px;
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* No fill and no frame of its own: the button already is the tool's shape, and
+   wrapping it in a second rounded panel drew every tool twice. */
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tool-card-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--control-height-sm);
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-card-action {
+  justify-content: flex-start;
+  min-width: 0;
+  text-align: left;
+}
+
+.tool-card-action .tool-card-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-card-action svg {
+  flex: 0 0 auto;
+}
+
+/* Deliberately neutral. The tinted fill belongs to the things you can press;
+   an explanatory panel wearing the same colour reads as another button. */
+.tool-details {
+  margin: 1px 0 4px;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.tool-details > p {
+  color: var(--subtle);
+}
+
+.tool-details p {
+  margin: 0;
+}
+
+.tool-details-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tool-details-heading p {
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tool-details-heading .link-button {
+  font-size: 9.5px;
+}
+
+.tool-field-list {
+  margin: 7px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-field-list li + li {
+  margin-top: 4px;
+}
+
+.field-link {
+  padding: 1px 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-muted);
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+.field-link:hover {
+  color: var(--accent-hover);
+  text-decoration-style: solid;
+}
+
+.field-details {
+  margin-left: 5px;
+  color: var(--subtle);
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+.tools-panel .temporary-note {
+  margin-top: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 980px) {
+  .tools-panel {
+    position: static;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+}
+
+@media (min-width: 981px) and (max-width: 1250px) {
+  .tools-heading-row {
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--panel-header-stack-gap);
+  }
+}

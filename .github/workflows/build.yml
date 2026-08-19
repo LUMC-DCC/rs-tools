@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up frontend
+        uses: ./.github/actions/setup-node
+      # Type-checks as well as bundles: `npm run build` runs tsc first.
+      - name: Build frontend
+        run: npm run build
+
+  image:
+    name: Container image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      # Built but not pushed: this proves the deployment artifact still builds
+      # from a clean checkout. Publishing is a release decision, not a CI one.
+      - name: Build container image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,27 @@
+/* Every stylesheet in the application, in cascade order: tokens first, then the
+   document defaults they feed, then shared components, then one file per view.
+   Nothing outside this file imports CSS, so the order is always visible here. */
+
+/* The typefaces, served from this origin. They were loaded from Google Fonts,
+   which sent every visitor's address to a third party and forced two exceptions
+   into the content security policy. Bundled instead, the policy needs none and
+   the application talks to nobody but itself.
+
+   The variable cuts carry a continuous weight axis, so the 650 and 750 weights
+   this interface uses render as themselves rather than snapping to the nearest
+   static weight. Each file is split by script with a `unicode-range`, so a
+   browser fetches only the subsets a page actually needs — and an author name
+   in Greek or Cyrillic still renders in the right typeface. */
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/jetbrains-mono/wght.css';
+
+@import './tokens.css';
+@import './base.css';
+@import './buttons.css';
+@import './layout.css';
+@import './feedback.css';
+@import './home.css';
+@import './workspace.css';
+@import './schema-form.css';
+@import './tools.css';
+@import './github.css';

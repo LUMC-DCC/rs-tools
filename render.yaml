@@ -1,0 +1,75 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+#
+# Everything this service needs is declared here, so Render creates the web
+# service and its Key Value store together and rebuilds both from the
+# repository on every push to main. The only values not in this file are the
+# three GitHub OAuth secrets, which Render prompts for and stores encrypted.
+services:
+  - type: web
+    name: rs-tools
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: frankfurt
+    branch: main
+    # Render restarts the service when this stops returning 200, which happens
+    # only when the app and its Key Value store are both reachable.
+    healthCheckPath: /api/health
+    envVars:
+      # The internal connection string of the Key Value instance below. Render
+      # fills this in, so no Redis address is ever written down here.
+      - key: RS_TOOLS_REDIS_URL
+        fromService:
+          type: keyvalue
+          name: rs-tools-keyvalue
+          property: connectionString
+
+      # Which Host headers this service answers on. Render picks the hostname
+      # when the service is created, and appends a suffix if the name is taken,
+      # so it cannot be written here in advance — and Render health-checks with
+      # that hostname as the Host header, so naming the wrong one would fail
+      # every check and cancel the deploy. The wildcard matches whichever
+      # subdomain is assigned while still refusing every other host, including
+      # look-alikes such as evil-onrender.com. Narrow it to the exact hostname
+      # once you know it, and add any custom domain you attach later.
+      - key: RS_TOOLS_TRUSTED_HOSTS
+        value: '*.onrender.com'
+
+      # The public origin, used for Location headers and the GitHub OAuth
+      # callback. Left for you to fill in after the first deploy, when the URL
+      # exists: Render prompts for it, and blank is fine to start with. Until it
+      # is set, GitHub publishing stays off and HSTS is not sent, so set it as
+      # soon as you have the URL. It must be the full origin, https included.
+      - key: RS_TOOLS_PUBLIC_BASE_URL
+        sync: false
+
+      # One origin serves the API and the interface, so no browser ever makes a
+      # cross-origin request to this service.
+      - key: RS_TOOLS_CORS_ORIGINS
+        value: ""
+
+      - key: RS_TOOLS_LOG_LEVEL
+        value: INFO
+
+      # GitHub publishing. Render prompts for each of these once and keeps them
+      # encrypted; they are never committed. Leave them blank to deploy with
+      # publishing switched off — the interface then offers only the download.
+      - key: RS_TOOLS_GITHUB_CLIENT_ID
+        sync: false
+      - key: RS_TOOLS_GITHUB_CLIENT_SECRET
+        sync: false
+      - key: RS_TOOLS_GITHUB_COOKIE_SECRET
+        sync: false
+
+  - type: keyvalue
+    name: rs-tools-keyvalue
+    plan: free
+    region: frankfurt
+    # Workspaces are temporary by design and carry their own expiry, so evicting
+    # the least recently used key under memory pressure is the right failure
+    # mode: it sheds the oldest workspace rather than refusing new ones.
+    maxmemoryPolicy: allkeys-lru
+    # Empty means no external connections at all: only services inside this
+    # Render account can reach it.
+    ipAllowList: []

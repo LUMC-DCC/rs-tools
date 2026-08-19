@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Check Python with Ruff
+        entry: poetry --directory=backend run ruff check . ../docs/_ext
+        language: system
+        pass_filenames: false
+      - id: ruff-format
+        name: Check Python formatting with Ruff
+        entry: poetry --directory=backend run ruff format --check . ../docs/_ext
+        language: system
+        pass_filenames: false
+      - id: eslint
+        name: Check TypeScript with ESLint
+        entry: npm --prefix frontend run lint
+        language: system
+        pass_filenames: false

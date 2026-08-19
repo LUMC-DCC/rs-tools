@@ -1,0 +1,121 @@
+/* The GitHub publishing form, shown inside the repository tool card.
+
+   No frame. The form is set apart by tinting its own fields instead, which
+   marks the group without drawing a box around it. */
+
+.github-section {
+  margin-top: 2px;
+  padding-top: 10px;
+}
+
+.github-actions,
+.github-publisher {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.github-publisher:focus {
+  outline: none;
+}
+
+.github-note {
+  margin: 0;
+  color: var(--subtle);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.github-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Tinted away from the metadata form's own fields: these belong to one action
+   being set up, not to the document being edited. */
+.github-field input,
+.github-field select {
+  background-color: var(--github-field);
+}
+
+.github-field input:hover:not(:disabled),
+.github-field select:hover:not(:disabled) {
+  background-color: var(--github-field-hover);
+}
+
+.github-field input:focus,
+.github-field select:focus {
+  background-color: var(--control-active);
+}
+
+/* On the OAuth return, these are the three decisions that still stand between
+   authorization and publishing. A temporary danger tint makes that hand-off
+   unmistakable without changing the normal GitHub form appearance. */
+.github-publisher.github-publisher-attention .github-field {
+  color: var(--danger-text);
+}
+
+.github-publisher.github-publisher-attention .github-field input,
+.github-publisher.github-publisher-attention .github-field select {
+  background-color: var(--danger-soft);
+  color: var(--danger-text);
+}
+
+.github-publisher.github-publisher-attention .github-field input:hover:not(:disabled),
+.github-publisher.github-publisher-attention .github-field select:hover:not(:disabled) {
+  background-color: var(--danger-soft-hover);
+}
+
+.github-publisher.github-publisher-attention .github-field input:focus,
+.github-publisher.github-publisher-attention .github-field select:focus {
+  background-color: var(--danger-soft);
+  box-shadow: 0 0 0 2px var(--danger-ring);
+}
+
+.github-connected {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--tool-text);
+  font-size: 11px;
+}
+
+.github-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.github-success {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--success-light);
+  color: var(--success-text);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.github-success > svg {
+  margin-top: 1px;
+}
+
+.github-success strong,
+.github-success-note {
+  display: block;
+}
+
+.github-success-note {
+  margin-top: 3px;
+  opacity: 0.82;
+}

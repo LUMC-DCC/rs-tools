@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python 3.14
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up backend
+        uses: ./.github/actions/setup-python
+        with:
+          groups: dev
+      # The suite runs against an in-process Redis-compatible fake, so no
+      # service container is needed.
+      - name: Run tests
+        run: poetry run pytest
+
+  frontend:
+    name: Node.js 22
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Set up frontend
+        uses: ./.github/actions/setup-node
+      - name: Run tests
+        run: npm test

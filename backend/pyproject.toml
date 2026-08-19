@@ -1,0 +1,100 @@
+[project]
+name = "rs-tools-backend"
+version = "0.1.0"
+description = "FastAPI backend for Research Software Tools."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.14,<3.15"
+keywords = ["metadata", "research-software", "templates", "web-application"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+]
+authors = [
+    # ORCID: https://orcid.org/0000-0002-0852-4752
+    { name = "Mariia Steeghs-Turchina", email = "m.a.steeghs-turchina@lumc.nl" },
+]
+maintainers = [
+    # ORCID: https://orcid.org/0000-0002-0852-4752
+    { name = "Mariia Steeghs-Turchina", email = "m.a.steeghs-turchina@lumc.nl" },
+    # ORCID: https://orcid.org/0000-0002-9839-5439
+    { name = "Anna Niehues", email = "a.niehues@lumc.nl" },
+]
+dependencies = [
+    "fastapi>=0.116,<1.0",
+    "jsonschema[format]>=4.25,<5.0",
+    "redis>=6.4,<8.0",
+    "uvicorn[standard]>=0.35,<1.0",
+    "cryptography>=46,<47",
+    "httpx>=0.28,<1.0",
+    "rsm-schema @ git+https://github.com/lumc-dcc/rsm-schema.git@main",
+    "rs-files-templates @ git+https://github.com/LUMC-DCC/rs-files-templates.git@main",
+    "copier>=9.17.2,<10.0",
+]
+
+[project.urls]
+Homepage = "https://rs-tools.onrender.com/"
+Repository = "https://github.com/LUMC-DCC/rs-tools"
+Issues = "https://github.com/LUMC-DCC/rs-tools/issues"
+Documentation = "https://lumc-dcc.github.io/rs-tools/"
+
+[tool.poetry]
+packages = [{ include = "rs_tools", from = "src" }]
+
+[tool.poetry.group.dev.dependencies]
+fakeredis = ">=2.31,<3.0"
+pre-commit = ">=4.2,<5.0"
+pytest = ">=8.4,<10.0"
+pytest-asyncio = ">=1.1,<2.0"
+ruff = ">=0.12,<1.0"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = ">=8.1,<10.0"
+myst-parser = ">=4.0,<5.0"
+sphinx-book-theme = ">=1.1,<2.0"
+sphinx-copybutton = ">=0.5,<1.0"
+sphinxcontrib-mermaid = ">=1.0,<2.0"
+
+[build-system]
+requires = ["poetry-core>=2.0,<3.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "D",   # pydocstyle
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+ignore = [
+    "D105", # magic methods explain themselves
+    "D107", # __init__ is documented on the class
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test names are the documentation; a docstring on each would only repeat them.
+"tests/*" = ["D100", "D103"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.format]
+docstring-code-format = true

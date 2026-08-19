@@ -1,0 +1,166 @@
+/* Buttons.
+
+   Three roles, and only three: `primary` for the main action on a view, `muted`
+   for a secondary action beside it, and `tool` for the buttons that produce
+   files. The tool fill is tinted so those never read as an empty form field. */
+
+.button {
+  min-height: var(--control-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+.button-primary {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: var(--accent-fill-hover);
+}
+
+.button-muted {
+  background: var(--control);
+  color: var(--text);
+}
+
+.button-muted:hover:not(:disabled) {
+  background: var(--control-hover);
+}
+
+.button-tool {
+  background: var(--tool);
+  color: var(--tool-text);
+  font-weight: 650;
+}
+
+.button-tool:hover:not(:disabled) {
+  background: var(--tool-hover);
+}
+
+.button-github {
+  background: var(--github-button);
+  color: var(--surface);
+}
+
+.button-github:hover:not(:disabled) {
+  background: var(--github-button-hover);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.button-block {
+  width: 100%;
+}
+
+/* A text button: no fill, no frame, underlined on hover. Used where a full
+   button would outweigh the action it performs. */
+.link-button {
+  padding: 1px 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+}
+
+.link-button:hover,
+.link-button.is-active {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* A small square button holding only an icon. */
+.icon-button {
+  width: var(--control-height-sm);
+  height: var(--control-height-sm);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--control);
+  color: var(--subtle);
+  cursor: pointer;
+  line-height: 1;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.icon-button:hover:not(:disabled),
+.icon-button.is-open {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.icon-button-danger:hover:not(:disabled) {
+  background: var(--danger);
+  color: var(--on-accent);
+}
+
+/* A segmented switch between mutually exclusive views.
+
+   Held to exactly --control-height-sm, the same as the other toolbar controls
+   beside it (the field filter, the field search): the wrapper's own padding
+   used to add on top of the button's, so this pill stood 6px taller than its
+   neighbours. */
+.toggle-group {
+  display: inline-flex;
+  height: var(--control-height-sm);
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--control);
+}
+
+.toggle-group button {
+  height: 100%;
+  min-height: 0;
+  padding: 0 11px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--subtle);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.toggle-group button:hover:not(.is-active) {
+  color: var(--text);
+}
+
+.toggle-group button.is-active {
+  background: var(--surface-raised);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}

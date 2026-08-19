@@ -1,0 +1,52 @@
+# Values come from .env, which Docker Compose loads automatically. Copy
+# .env.example to .env to start from documented defaults.
+services:
+  app:
+    build: .
+    environment:
+      # Redis runs beside the app on the compose network, so this overrides
+      # whatever .env says for a host-local Redis.
+      RS_TOOLS_REDIS_URL: redis://redis:6379/0
+      RS_TOOLS_WORKSPACE_TTL_SECONDS: ${RS_TOOLS_WORKSPACE_TTL_SECONDS:-43200}
+      RS_TOOLS_MAX_REQUEST_BYTES: ${RS_TOOLS_MAX_REQUEST_BYTES:-1048576}
+      RS_TOOLS_LOG_LEVEL: ${RS_TOOLS_LOG_LEVEL:-INFO}
+      RS_TOOLS_PUBLIC_BASE_URL: ${RS_TOOLS_PUBLIC_BASE_URL:-}
+      RS_TOOLS_TRUSTED_HOSTS: ${RS_TOOLS_TRUSTED_HOSTS:-*}
+      # One origin serves the API and the interface, so no browser ever makes a
+      # cross-origin request to it.
+      RS_TOOLS_CORS_ORIGINS: ""
+      RS_TOOLS_RATE_LIMIT_REQUESTS: ${RS_TOOLS_RATE_LIMIT_REQUESTS:-120}
+      RS_TOOLS_RATE_LIMIT_HEAVY_REQUESTS: ${RS_TOOLS_RATE_LIMIT_HEAVY_REQUESTS:-10}
+      RS_TOOLS_RATE_LIMIT_WINDOW_SECONDS: ${RS_TOOLS_RATE_LIMIT_WINDOW_SECONDS:-60}
+      RS_TOOLS_REPOSITORY_TEMPLATE_URL: ${RS_TOOLS_REPOSITORY_TEMPLATE_URL:-https://github.com/LUMC-DCC/rs-repo-templates.git}
+      RS_TOOLS_REPOSITORY_TEMPLATE_REVISION: ${RS_TOOLS_REPOSITORY_TEMPLATE_REVISION:-main}
+      # Copier stores a Git mirror here and creates temporary worktrees from it.
+      COPIER_CACHE_DIR: /var/cache/rs-tools/copier
+      RS_TOOLS_GITHUB_CLIENT_ID: ${RS_TOOLS_GITHUB_CLIENT_ID:-}
+      RS_TOOLS_GITHUB_CLIENT_SECRET: ${RS_TOOLS_GITHUB_CLIENT_SECRET:-}
+      RS_TOOLS_GITHUB_CLIENT_SECRET_FILE: ${RS_TOOLS_GITHUB_CLIENT_SECRET_FILE:-}
+      RS_TOOLS_GITHUB_COOKIE_SECRET: ${RS_TOOLS_GITHUB_COOKIE_SECRET:-}
+      RS_TOOLS_GITHUB_COOKIE_SECRET_FILE: ${RS_TOOLS_GITHUB_COOKIE_SECRET_FILE:-}
+    volumes:
+      - copier-cache:/var/cache/rs-tools
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    # No persistence: workspaces are temporary by design, and nothing here is
+    # worth writing to disk.
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  copier-cache:

@@ -1,0 +1,255 @@
+/* Page shells and the resizable workspace grid. */
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.panel {
+  /* border: 1px solid var(--line); */
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  /* box-shadow: var(--shadow); */
+}
+
+.site-header {
+  width: 100%;
+  height: var(--site-header-height);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 max(var(--page-inline-gutter), calc((100% - 1380px) / 2));
+  background: var(--background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.site-header.is-scrolled {
+  background: var(--header-translucent);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand strong {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.brand-mark {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  display: block;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.theme-switcher {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--text);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.theme-switcher:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+
+.home-main {
+  width: min(
+    720px,
+    calc(100% - var(--page-inline-gutter) - var(--page-inline-gutter))
+  );
+  margin: 64px auto;
+}
+
+.workspace-main {
+  width: min(
+    1380px,
+    calc(100% - var(--page-inline-gutter) - var(--page-inline-gutter))
+  );
+  margin: 0 auto;
+  padding: var(--workspace-top-gap) 0 0;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) var(--workspace-resizer-width) var(--tools-panel-width, 40%);
+  align-items: start;
+  column-gap: var(--workspace-column-gap);
+  row-gap: 0;
+}
+
+/* Keep the page's closing whitespace inside the sticky containing block as a
+   real row. This matches the 16px viewport inset used by the sticky tools
+   panel, so both panels finish the page at the same distance from its edge. */
+.workspace-grid::after {
+  content: "";
+  height: var(--workspace-bottom-gap);
+  grid-column: 1 / -1;
+}
+
+.workspace-grid.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.workspace-resizer {
+  height: calc(
+    100dvh - var(--workspace-viewport-top, var(--site-header-height)) -
+      var(--workspace-bottom-gap)
+  );
+  position: sticky;
+  top: var(
+    --workspace-viewport-top,
+    calc(var(--site-header-height) + var(--workspace-bottom-gap))
+  );
+  align-self: start;
+  border-radius: var(--radius-pill);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.workspace-resizer::before {
+  content: "";
+  width: 4px;
+  height: 46px;
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  border-radius: var(--radius-pill);
+  background: var(--line-strong);
+  transform: translateX(-50%);
+  transition:
+    background 150ms ease,
+    height 150ms ease;
+}
+
+.workspace-resizer:hover::before,
+.workspace-resizer:focus-visible::before,
+.workspace-grid.is-resizing .workspace-resizer::before {
+  height: 62px;
+  background: var(--accent-fill);
+}
+
+.centered-state {
+  width: min(
+    620px,
+    calc(100% - var(--page-inline-gutter) - var(--page-inline-gutter))
+  );
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.centered-state h1 {
+  margin: 0 0 10px;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+
+.centered-state > p {
+  margin: 0 0 20px;
+  color: var(--subtle);
+}
+
+.centered-state .notice {
+  width: 100%;
+  text-align: left;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--subtle);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.loading-mark {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 16px;
+  border: 3px solid var(--accent-light);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 980px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    gap: var(--workspace-bottom-gap);
+  }
+
+  .workspace-resizer {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .site-header,
+  .workspace-main,
+  .home-main {
+    width: calc(
+      100% - var(--page-inline-gutter-mobile) - var(--page-inline-gutter-mobile)
+    );
+  }
+
+  .site-header {
+    width: 100%;
+    padding-inline: var(--page-inline-gutter-mobile);
+  }
+
+  .brand strong {
+    max-width: 155px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-main {
+    margin-top: 30px;
+  }
+}

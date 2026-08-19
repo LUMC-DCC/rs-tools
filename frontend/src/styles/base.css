@@ -1,0 +1,284 @@
+/* Document defaults and the shared form-control primitive.
+
+   Browsers style form controls very differently by default: Safari rounds
+   selects and draws its own arrow, Firefox sizes them differently again, and
+   Chrome adds a spinner and its own focus ring. Every control is therefore
+   reset here and rebuilt from the tokens, so a field looks the same everywhere
+   instead of picking up whatever the browser felt like drawing. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  color: var(--text);
+  background: var(--background);
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-size: 14px;
+  letter-spacing: -0.006em;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 650;
+}
+
+/* Slightly stronger than Lucide's default stroke, matching the visual weight
+   of the interface text at the small icon sizes used throughout the app. */
+.lucide {
+  stroke-width: 2.35;
+}
+
+/* --- Form controls -------------------------------------------------------- */
+
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* The single field appearance. Borderless by design: the fill is what marks a
+   control, so there is no stroked frame anywhere in the interface. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 6px var(--control-padding-x);
+  border: 0;
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: var(--control);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.4;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) {
+  background: var(--control-hover);
+}
+
+/* Focus is shown with a ring rather than a border, so nothing shifts by a pixel
+   when a control is focused. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+select:focus,
+textarea:focus {
+  background: var(--control-active);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+textarea {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* appearance:none removes the native arrow, so draw one. An inline SVG keeps it
+   identical in every browser and needs no network request. */
+select {
+  padding-right: 30px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--subtle) 50%),
+    linear-gradient(135deg, var(--subtle) 50%, transparent 50%);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 15px) calc(50% - 1px), calc(100% - 10px) calc(50% - 1px);
+  cursor: pointer;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+/* Firefox draws a dotted inner focus outline on selects. */
+select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 var(--text);
+}
+
+/* Chrome's number spinners appear on hover only, which makes a number field
+   change width compared with a text field beside it. */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* Checkboxes and radios are drawn from scratch for the same reason: the native
+   control is a different size and colour in every browser. */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid var(--on-accent);
+  border-left: 2px solid var(--on-accent);
+  opacity: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--on-accent);
+  opacity: 0;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  border-color: var(--accent-fill);
+  background: var(--accent-fill);
+}
+
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before {
+  opacity: 1;
+}
+
+input[type="checkbox"]:hover:not(:disabled),
+input[type="radio"]:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* One focus treatment for everything reachable by keyboard. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-ring);
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+.visually-hidden {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

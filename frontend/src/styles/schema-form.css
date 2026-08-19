@@ -1,0 +1,387 @@
+/* The generated metadata form.
+
+   Field names come straight from the schema and are never rewritten here, and
+   no rule names a property, so a schema change needs no edit to this file.
+
+   Everything is anchored on `[data-depth]`, which the form templates set. The
+   number of wrapper elements RJSF puts between two fields is an implementation
+   detail of the library and changes between versions, so a chain of child
+   selectors is not something to depend on.
+
+   Hierarchy is carried by folding and indentation rather than by styling each
+   level differently: a nested group looks the same however deep it sits, which
+   is one rule to read instead of four. Array entries are narrow and scroll
+   sideways so a long list does not push the rest of the form off screen, each
+   is numbered, and its controls sit below it. */
+
+.schema-form fieldset {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+/* The root object's own title would just repeat the panel heading. */
+.schema-form .field-group[data-depth='0'] > fieldset > legend {
+  display: none;
+}
+
+.schema-form .form-group {
+  min-width: 0;
+  margin: 8px 0;
+}
+
+/* --- Top level --------------------------------------------------------------
+
+   Each top-level field is a band separated by a rule, so where one ends and the
+   next begins is visible without reading the labels. */
+
+.schema-form .field-group[data-depth='0'] > fieldset > .form-group {
+  margin: 0;
+  padding: 16px 2px;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.schema-form .field-group[data-depth='0'] > fieldset > .form-group:last-child {
+  border-bottom: 0;
+}
+
+/* --- Nested groups ----------------------------------------------------------
+
+   One appearance at every depth. The surrounding field structure carries the
+   hierarchy; restyling each level said it a second time, less clearly. */
+
+.schema-form .field-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  padding: 2px 0;
+  color: var(--subtle);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* Stated after the base appearance above, not before it: both selectors carry
+   the same specificity, so whichever comes last wins. A scalar names itself
+   with a label and a group with a summary or a plain label; at the top level
+   they are the same rank and must not be drawn at different sizes.
+
+   The group case is matched on the group's own depth, not on its parent chain:
+   a checklist wrapped directly at the top level (`retirement_criteria` is
+   `{ entries: [...] }` of enum values, exactly like a nested one) renders as a
+   depth-1 `.field-group-label` one level inside `.form-group`, not as its
+   direct child, so a chain of descendant combinators does not reach it. */
+.schema-form .field-group[data-depth='0'] > fieldset > .form-group > .control-label,
+.schema-form .field-group[data-depth='1'] > .field-group-label {
+  margin-bottom: 6px;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Nested titles keep the same left edge as the fields above them. A restrained
+   guide line carries the hierarchy without progressively shifting labels and
+   controls to the right. */
+.schema-form .field-group[data-depth='2'],
+.schema-form .field-group[data-depth='3'],
+.schema-form .field-group[data-depth='4'],
+.schema-form .field-group[data-depth='5'],
+.schema-form .field-group[data-depth='6'] {
+  margin-top: 10px;
+}
+
+/* --- Labels, descriptions, and errors ------------------------------------- */
+
+.schema-form .control-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--subtle);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.schema-form .control-label .required {
+  margin-left: 3px;
+  color: var(--danger);
+}
+
+.schema-form .help-block,
+.schema-form .field-description {
+  margin: 0 0 6px;
+  color: var(--subtle);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.schema-form .field-group > fieldset > .field-description {
+  margin: -2px 0 8px;
+}
+
+.schema-form .error-detail {
+  margin: 4px 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.schema-form .text-danger {
+  color: var(--danger);
+  font-size: 10px;
+}
+
+.schema-form .has-error > .control-label {
+  color: var(--danger);
+}
+
+/* --- Checkbox and radio rows ---------------------------------------------- */
+
+.schema-form .checkbox,
+.schema-form .radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.schema-form .checkbox label,
+.schema-form .radio label {
+  margin: 0;
+}
+
+.schema-form .checkboxes,
+.schema-form .radio-inline-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 5px 14px;
+}
+
+.schema-form .checkboxes .checkbox {
+  min-width: 0;
+  margin: 0;
+  padding: 3px 0;
+}
+
+.schema-form .checkboxes .checkbox label,
+.schema-form .checkboxes .checkbox label > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+/* --- Array entries -------------------------------------------------------- */
+
+/* Entries lie side by side and scroll sideways: stacked, a list of ten authors
+   buries every field below it, and each entry only needs its own width. */
+.schema-form .array-item-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 1px 1px 8px;
+  scrollbar-width: thin;
+  /* Numbers the entries. Without them, "move up" and "delete" in a list of
+     several authors give no clue which entry they act on. */
+  counter-reset: array-entry;
+}
+
+/* RJSF still emits the list container before any entries exist. It should not
+   reserve the populated-list scrollbar gap above the only available action. */
+.schema-form .array-item-list:empty,
+.schema-form .array-item-list:not(:has(.rjsf-array-item)) {
+  display: none;
+}
+
+.schema-form .array-item-list:empty + .add-entry-button,
+.schema-form .array-item-list:not(:has(.rjsf-array-item)) + .add-entry-button {
+  margin-top: 2px;
+}
+
+/* Nested array labels stay aligned with the other nested labels. Once entries
+   exist, their list alone gets a guide line to make the contained records read
+   as one unit. */
+.schema-form .rjsf-array-item .array-item-list:has(.rjsf-array-item) {
+  border-left: 1px solid var(--line-strong);
+  padding-left: 8px;
+}
+
+.schema-form .rjsf-array-item {
+  flex: 0 0 clamp(220px, 52%, 300px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 8px 10px 9px;
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  counter-increment: array-entry;
+}
+
+/* An entry holding a nested group needs room for that group's own two-column
+   fields; a bare string does not. */
+.schema-form .rjsf-array-item:has(.field-group) {
+  flex-basis: min(420px, 84%);
+}
+
+.schema-form .rjsf-array-item-content {
+  min-width: 0;
+}
+
+.schema-form .rjsf-array-item-content > .form-group {
+  margin: 0;
+}
+
+/* Sized by its content, so no drag handle and no scrollbar of its own. */
+.schema-form textarea.growing-text {
+  min-height: var(--control-height);
+  overflow-y: hidden;
+  resize: none;
+}
+
+/* Inside a narrow entry the two-column scalar layout has no room, so the label
+   sits above its control. */
+.schema-form .rjsf-array-item .rjsf-field-string,
+.schema-form .rjsf-array-item .rjsf-field-number,
+.schema-form .rjsf-array-item .rjsf-field-integer {
+  display: block;
+}
+
+.schema-form .rjsf-array-item .rjsf-field-string > .control-label,
+.schema-form .rjsf-array-item .rjsf-field-number > .control-label,
+.schema-form .rjsf-array-item .rjsf-field-integer > .control-label {
+  margin-bottom: 4px;
+}
+
+/* A compact entry header keeps its identity and actions in view without
+   spending a separate row below every card. */
+.schema-form .array-entry-header,
+.schema-form .array-entry-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 20px;
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.schema-form .array-entry-header > span,
+.schema-form .array-entry-summary > span {
+  margin-right: auto;
+}
+
+.schema-form .array-entry-details {
+  min-width: 0;
+}
+
+.schema-form .array-entry-summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.schema-form .array-entry-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A stroked chevron, rather than the browser's filled disclosure triangle. */
+.schema-form .array-entry-summary::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-left: 2px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform 120ms ease;
+}
+
+.schema-form .array-entry-details:not([open]) > .array-entry-summary::before {
+  transform: translateY(0) rotate(-45deg);
+}
+
+.schema-form .array-entry-summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-pill);
+}
+
+.schema-form .rjsf-array-item-actions {
+  display: flex;
+}
+
+.schema-form .btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+/* Small on purpose: adding an entry is a minor action beside the entries
+   themselves, and at full button size it outweighed them. */
+.schema-form .add-entry-button {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--tool);
+  color: var(--tool-text);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.schema-form .add-entry-button:hover:not(:disabled) {
+  background: var(--tool-hover);
+}
+
+.schema-form .add-entry-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* --- Field layout --------------------------------------------------------
+
+   Every field reads the same way: name, then explanation, then the control,
+   all on one left edge. A two-column variant for short fields was tried and
+   removed — it put some controls beside their label and others below, so a
+   description sat next to a control on one row and above one on the next, and
+   the form scanned as ragged. One order for everything is worth the height. */
+
+/* Boolean fields have a deliberately compact label/control pair, but the name
+   still leads, as it does for every other field. */
+.schema-form .boolean-field-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.schema-form .boolean-field-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  color: var(--subtle);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.schema-form .field-group[data-depth='0'] > fieldset > .form-group .boolean-field-label {
+  margin-bottom: 1px;
+  color: var(--text-strong);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}

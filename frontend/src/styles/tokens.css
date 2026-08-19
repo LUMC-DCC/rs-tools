@@ -1,0 +1,155 @@
+/* A compact, Zensical-inspired theme system. Components only consume semantic
+   tokens, so the light and dark palettes stay structurally identical. */
+:root {
+  /* Surfaces */
+  --background: #f7f9fb;
+  --surface: #ffffff;
+  --header-translucent: rgba(247, 249, 251, 0.9);
+  --surface-translucent: rgba(255, 255, 255, 0.9);
+  --surface-floating: rgba(0, 124, 194, 0.14);
+  --surface-floating-hover: rgba(0, 124, 194, 0.23);
+  --surface-sunken: #f3f6f8;
+  --surface-raised: #ffffff;
+
+  /* Form controls */
+  --control: #eff3f6;
+  --control-hover: #e7edf2;
+  --control-active: #ffffff;
+
+  /* Tools */
+  --tool: #e1f2f8;
+  --tool-hover: #cee8ef;
+  --tool-text: #003c7d;
+
+  /* GitHub action fields */
+  --github-field: #eff2f6;
+  --github-field-hover: #e5eaf0;
+  --github-button: #24292f;
+  --github-button-hover: #111418;
+
+  /* Brand and interaction. Derived from LUMC navy (#003c7d), blue
+     (#007cc2), and pale blue (#cee8ef). */
+  --accent: #007cc2;
+  --accent-hover: #005f9e;
+  --accent-fill: #007cc2;
+  --accent-fill-hover: #0068a4;
+  --accent-light: #dff2fa;
+  --accent-ring: rgba(0, 124, 194, 0.26);
+  --accent-muted: rgba(0, 60, 125, 0.42);
+  --on-accent: #ffffff;
+
+  /* Text */
+  --text: #202830;
+  --text-strong: #111820;
+  --subtle: #5f6d79;
+
+  /* Lines */
+  --line: #e3e9ee;
+  --line-strong: #d2dce4;
+
+  /* Status */
+  --danger: #bd3e4b;
+  --danger-light: #fff0f1;
+  --danger-text: #8c2933;
+  --danger-soft: #f4d8dc;
+  --danger-soft-hover: #ecc7cc;
+  --danger-ring: rgba(189, 62, 75, 0.3);
+  --success: #3a9b61;
+  --success-light: #e5f5eb;
+  --success-text: #246b43;
+  --pending: #d49a33;
+
+  /* Shape and depth */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --shadow: 0 2px 8px rgba(0, 60, 125, 0.035);
+  --shadow-raised: 0 18px 50px rgba(0, 35, 73, 0.18);
+
+  /* Type. These match Zensical's modern default font configuration. */
+  --font-body: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif;
+  --font-display: var(--font-body);
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
+
+  /* Shared control metrics */
+  --control-height: 36px;
+  --control-height-sm: 30px;
+  --control-padding-x: 11px;
+
+  /* Shared workspace geometry. The two panel headers and all three sticky
+     columns consume these values so changing an inset or gap cannot put them
+     on different edges. */
+  --site-header-height: 48px;
+  --page-inline-gutter: 20px;
+  --page-inline-gutter-mobile: 12px;
+  --workspace-top-gap: 24px;
+  --workspace-titlebar-height: 48px;
+  --workspace-bottom-gap: 16px;
+  --workspace-column-gap: 8px;
+  --workspace-resizer-width: 12px;
+  --panel-inline-padding: 16px;
+  --panel-header-padding-y: 13px;
+  --panel-header-stack-gap: 10px;
+  --panel-search-width: 190px;
+  --floating-control-size: 40px;
+  --panel-header-min-height: calc(
+    var(--control-height-sm) + var(--panel-header-padding-y) + var(--panel-header-padding-y) + 1px
+  );
+}
+
+:root[data-theme='dark'] {
+  --background: #0b0c10;
+  --surface: #111318;
+  --header-translucent: rgba(11, 12, 16, 0.9);
+  --surface-translucent: rgba(17, 19, 24, 0.9);
+  --surface-floating: rgba(0, 124, 194, 0.24);
+  --surface-floating-hover: rgba(0, 124, 194, 0.36);
+  --surface-sunken: #171a21;
+  --surface-raised: #111318;
+
+  --control: #1b2028;
+  --control-hover: #232a34;
+  --control-active: #111318;
+
+  --tool: #0e3049;
+  --tool-hover: #124361;
+  --tool-text: #bde8fa;
+
+  --github-field: #1b2029;
+  --github-field-hover: #242b36;
+  --github-button: #f0f3f4;
+  --github-button-hover: #ffffff;
+
+  --accent: #5bc0ed;
+  --accent-hover: #8ed4f2;
+  --accent-fill: #007cc2;
+  --accent-fill-hover: #168dcc;
+  --accent-light: #11354f;
+  --accent-ring: rgba(0, 124, 194, 0.42);
+  --accent-muted: rgba(115, 198, 236, 0.5);
+  --on-accent: #ffffff;
+
+  --text: #e0e5ea;
+  --text-strong: #f7f8fa;
+  --subtle: #9da7b2;
+
+  --line: #252a32;
+  --line-strong: #353d48;
+
+  --danger: #f07682;
+  --danger-light: #3a2226;
+  --danger-text: #ffb8bf;
+  --danger-soft: #4a292f;
+  --danger-soft-hover: #5b3037;
+  --danger-ring: rgba(240, 118, 130, 0.38);
+  --success: #61c887;
+  --success-light: #193628;
+  --success-text: #9ee3b7;
+  --pending: #e1aa4b;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-raised: 0 20px 55px rgba(0, 0, 0, 0.46);
+}
