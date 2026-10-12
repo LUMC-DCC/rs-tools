@@ -100,4 +100,5 @@ export interface GitHubRepositoryOptions {
 export interface GitHubPublishResult {
   url: string
   authorization_revoked: boolean
+  warnings?: string[]
 }
