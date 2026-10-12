@@ -122,6 +122,9 @@ export default function GitHubPublisher({
                       ? 'GitHub access has been revoked.'
                       : 'Automatic revocation failed. Disconnect GitHub below to retry.'}
                   </span>
+                  {result.warnings?.map((warning) => (
+                    <p className="github-note" role="alert" key={warning}>{warning}</p>
+                  ))}
                 </div>
               </div>
 

@@ -261,7 +261,7 @@ async def publish_github_repository(
     service: WorkspaceServiceDependency,
     settings: SettingsDependency,
     github: GitHubServiceDependency,
-) -> dict[str, str | bool]:
+) -> dict[str, str | bool | list[str]]:
     """Generate a repository and publish it under the chosen account.
 
     The requested owner is matched against the accounts GitHub reports for this
@@ -317,6 +317,7 @@ async def publish_github_repository(
         account.login,
         options.name,
         options.template,
+        private=options.private,
     )
     repository = await run_in_threadpool(
         render_repository,
@@ -327,6 +328,7 @@ async def publish_github_repository(
         ),
     )
     metadata = repository_metadata(enriched_data)
+    warnings: list[str] = []
     url = await github.publish_repository(
         connection,
         account,
@@ -336,8 +338,9 @@ async def publish_github_repository(
         metadata.description,
         metadata.homepage,
         metadata.topics,
+        warnings=warnings,
     )
     authorization_revoked = await github.revoke_authorization(connection)
     if authorization_revoked:
         response.delete_cookie(GITHUB_CONNECTION_COOKIE, path="/api")
-    return {"url": url, "authorization_revoked": authorization_revoked}
+    return {"url": url, "authorization_revoked": authorization_revoked, "warnings": warnings}

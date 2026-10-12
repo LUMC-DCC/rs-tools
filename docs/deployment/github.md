@@ -106,3 +106,16 @@ Official references: [creating an OAuth App](https://docs.github.com/en/apps/oau
 [authorizing OAuth Apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps),
 [OAuth scopes](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps), and
 [deleting an OAuth authorization](https://docs.github.com/en/rest/apps/oauth-applications#delete-an-app-authorization).
+
+## Documentation publishing
+
+For public repositories with a documentation site, repository creation enables
+GitHub Pages with GitHub Actions as its build source before the initial workflow
+runs. This applies to MkDocs, Zensical, Sphinx, and pkgdown sites. Pull requests
+build the documentation without publishing it; default-branch pushes deploy it.
+
+If GitHub refuses Pages setup, repository creation still succeeds and displays a
+notice explaining how to configure Settings → Pages and rerun the workflow.
+Private repositories do not automatically publish documentation or infer a public
+documentation URL. Publishing such a site requires an explicit change to the
+workflow's visibility guard and Pages settings.

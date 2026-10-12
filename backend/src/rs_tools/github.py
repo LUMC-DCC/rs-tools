@@ -49,6 +49,8 @@ def enrich_repository_urls(
     owner: str,
     name: str,
     template_id: str | None = None,
+    *,
+    private: bool = False,
 ) -> dict[str, Any]:
     """Fill GitHub URLs that become known only when a destination is chosen.
 
@@ -61,8 +63,10 @@ def enrich_repository_urls(
     urls = dict(current_urls) if isinstance(current_urls, dict) else {}
     if not _nonempty_string(urls.get("repository")):
         urls["repository"] = f"https://github.com/{owner}/{name}"
-    if not _nonempty_string(urls.get("documentation")) and _deploys_documentation(
-        enriched, template_id
+    if (
+        not private
+        and not _nonempty_string(urls.get("documentation"))
+        and _deploys_documentation(enriched, template_id)
     ):
         suffix = "" if name.casefold() == f"{owner.casefold()}.github.io" else f"/{name}"
         urls["documentation"] = f"https://{owner}.github.io{suffix}/"
@@ -73,10 +77,12 @@ def enrich_repository_urls(
 def _deploys_documentation(smp: dict[str, Any], template_id: str | None) -> bool:
     documentation_types = smp.get("documentation_types")
     entries = documentation_types.get("entries") if isinstance(documentation_types, dict) else None
-    return (
-        (template_id or "python") == "python"
-        and bool(entries)
-        and smp.get("documentation_builder") in GITHUB_PAGES_BUILDERS
+    return bool(entries) and (
+        (
+            (template_id or "python") in {"python", "generic"}
+            and smp.get("documentation_builder") in GITHUB_PAGES_BUILDERS
+        )
+        or (template_id == "r" and smp.get("documentation_builder") == "pkgdown")
     )
 
 
@@ -428,6 +434,8 @@ class GitHubOAuthService:
         description: str,
         homepage: str | None = None,
         topics: tuple[str, ...] = (),
+        *,
+        warnings: list[str] | None = None,
     ) -> str:
         """Create a repository and write the generated files as one initial commit.
 
@@ -449,6 +457,8 @@ class GitHubOAuthService:
             Public website shown in the GitHub repository sidebar.
         topics : tuple of str
             Sanitized GitHub topics derived from RSM keywords.
+        warnings : list of str or None
+            Optional destination for non-fatal documentation setup notices.
 
         Returns
         -------
@@ -506,6 +516,36 @@ class GitHubOAuthService:
                 f"/repos/{owner}/{repo_name}/topics",
                 {"names": list(topics)},
             )
+        has_pages_workflow = any(
+            file.path == ".github/workflows/docs.yml"
+            and b"uses: actions/deploy-pages@" in file.content
+            for file in repository.files
+        )
+        if has_pages_workflow:
+            notice = ""
+            if private:
+                notice = (
+                    "Documentation deployment is disabled for private repositories. "
+                    "Enable GitHub Pages and update the documentation workflow only "
+                    "if you intend to publish the site."
+                )
+            else:
+                try:
+                    # Configure Pages before the branch update triggers its first workflow.
+                    await self._request(
+                        connection.access_token,
+                        "POST",
+                        f"/repos/{owner}/{repo_name}/pages",
+                        {"build_type": "workflow"},
+                    )
+                except GitHubAPIError:
+                    notice = (
+                        "The repository was created, but GitHub Pages could not be enabled. "
+                        "Check your account's Pages availability, select GitHub Actions "
+                        "under Settings → Pages, and rerun the documentation workflow."
+                    )
+            if notice and warnings is not None:
+                warnings.append(notice)
         tree_entries: list[dict[str, str]] = []
         for file in repository.files:
             blob = await self._request(

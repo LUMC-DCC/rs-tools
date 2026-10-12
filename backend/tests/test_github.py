@@ -135,7 +135,10 @@ def test_github_destination_preserves_explicit_urls_and_does_not_guess_plain_doc
         "documentation": "https://docs.example.org/tool",
     }
     assert plain["urls"] == {"repository": "https://github.com/octocat/tool"}
-    assert r_project["urls"] == {"repository": "https://github.com/octocat/tool"}
+    assert r_project["urls"] == {
+        "repository": "https://github.com/octocat/tool",
+        "documentation": "https://octocat.github.io/tool/",
+    }
 
 
 @pytest.mark.asyncio
@@ -333,3 +336,73 @@ async def test_github_publish_rejects_unsafe_output_before_creating_repository(
             True,
             "A generated repository.",
         )
+
+
+@pytest.mark.parametrize(("private", "pages_fails"), [(False, False), (False, True), (True, False)])
+async def test_publisher_prepares_pages_before_first_ci_and_reports_setup_limits(
+    monkeypatch: pytest.MonkeyPatch,
+    private: bool,
+    pages_fails: bool,
+) -> None:
+    service = github_service()
+    calls: list[tuple[str, str, dict[str, Any] | None]] = []
+
+    async def fake_request(
+        _token: str, method: str, path: str, body: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        calls.append((method, path, body))
+        if path == "/user/repos":
+            return {
+                "owner": {"login": "octocat"},
+                "name": "tool",
+                "html_url": "https://github.com/octocat/tool",
+                "default_branch": "master",
+            }
+        if path.endswith("/pages") and pages_fails:
+            raise GitHubAPIError("Pages unavailable for this account")
+        return {"sha": "test-sha"}
+
+    monkeypatch.setattr(service, "_request", fake_request)
+    warnings: list[str] = []
+    url = await service.publish_repository(
+        GitHubConnection(
+            workspace_id="workspace-id", access_token="token", user_id=1, user_login="octocat"
+        ),
+        GitHubAccount(login="octocat", type="User", account_id=1),
+        GeneratedRepository(
+            name="tool",
+            files=(
+                RepositoryFile(
+                    path=".github/workflows/docs.yml",
+                    content=b"jobs:\n  deploy:\n    uses: actions/deploy-pages@v4\n",
+                ),
+            ),
+        ),
+        "tool",
+        private,
+        "Research tool",
+        warnings=warnings,
+    )
+    assert url == "https://github.com/octocat/tool"
+    assert bool(warnings) == (private or pages_fails)
+    assert calls[-1][1].endswith("/git/refs/heads/master")
+    pages_calls = [call for call in calls if call[1].endswith("/pages")]
+    if private:
+        assert not pages_calls
+        assert "private" in warnings[0]
+    else:
+        assert pages_calls == [("POST", "/repos/octocat/tool/pages", {"build_type": "workflow"})]
+        assert calls.index(pages_calls[0]) < next(
+            index for index, call in enumerate(calls) if call[1].endswith("/git/commits")
+        )
+
+
+def test_pages_urls_are_inferred_for_generic_sites_but_never_private_projects() -> None:
+    metadata = {"documentation_types": {"entries": ["user"]}, "documentation_builder": "mkdocs"}
+    assert enrich_repository_urls(metadata, "octocat", "tool", "generic")["urls"] == {
+        "repository": "https://github.com/octocat/tool",
+        "documentation": "https://octocat.github.io/tool/",
+    }
+    assert enrich_repository_urls(metadata, "octocat", "tool", private=True)["urls"] == {
+        "repository": "https://github.com/octocat/tool",
+    }
