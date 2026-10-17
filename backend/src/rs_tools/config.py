@@ -212,8 +212,9 @@ class Settings:
         metadata={"description": "Trusted Copier repository used for project scaffolds."},
     )
     repository_template_revision: str = field(
-        default_factory=lambda: os.getenv(
-            "RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", DEFAULT_REPOSITORY_TEMPLATE_REVISION
+        default_factory=lambda: (
+            os.getenv("RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", "").strip()
+            or DEFAULT_REPOSITORY_TEMPLATE_REVISION
         ),
         metadata={"description": "Git branch, tag, or commit of the Copier repository."},
     )
