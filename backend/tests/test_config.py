@@ -11,6 +11,24 @@ from rs_tools.config import Settings
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 
 
+def test_repository_template_defaults_use_release_across_deployment_examples(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", raising=False)
+
+    assert Settings().repository_template_revision == "v1.0.0"
+    example = (REPOSITORY_ROOT / ".env.example").read_text(encoding="utf-8")
+    compose = (REPOSITORY_ROOT / "compose.yaml").read_text(encoding="utf-8")
+    assert "RS_TOOLS_REPOSITORY_TEMPLATE_REVISION=v1.0.0\n" in example
+    assert "${RS_TOOLS_REPOSITORY_TEMPLATE_REVISION:-v1.0.0}" in compose
+
+
+def test_repository_template_revision_can_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", "v1.0.1")
+
+    assert Settings().repository_template_revision == "v1.0.1"
+
+
 def test_github_secrets_can_be_loaded_from_files(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     client_secret = tmp_path / "client-secret"
     cookie_secret = tmp_path / "cookie-secret"

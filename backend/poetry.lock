@@ -2001,13 +2001,15 @@ files = [
 
 [[package]]
 name = "rs-files-templates"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reusable typed templates and renderers for research-software project files."
 optional = false
-python-versions = ">=3.14,<4.0"
+python-versions = "<4.0,>=3.14"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "rs_files_templates-1.0.0-py3-none-any.whl", hash = "sha256:9112a49635d02398137cd2ee469b498da7b7bce327811ba9da760a9e809309f5"},
+    {file = "rs_files_templates-1.0.0.tar.gz", hash = "sha256:d9464a0b76514bb54cdabe9eb16f17aee1cdbbf711b5a57dd1f9c0e2a256afa6"},
+]
 
 [package.dependencies]
 jinja2 = ">=3.1.6,<4.0"
@@ -2015,13 +2017,8 @@ jsonschema = ">=4.25,<5.0"
 pydantic = ">=2.13,<3.0"
 pyyaml = ">=6.0.2,<7.0"
 referencing = ">=0.36,<1.0"
+rs-metadata = ">=1.0.0,<2.0.0"
 rsm-schema = ">=1.0.0,<2.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/LUMC-DCC/rs-files-templates.git"
-reference = "c4b5241eccbcc6af19a0cae60e324c01ea0e69a6"
-resolved_reference = "c4b5241eccbcc6af19a0cae60e324c01ea0e69a6"
 
 [[package]]
 name = "rs-metadata"
@@ -2832,4 +2829,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "a64bb636b24b7a6b98dc08b1d1e08f5480c043f5de571f46c684b262b3d0ca28"
+content-hash = "b3dc4bd232eed995fb9130e4940ae1123fea8b9c75316b38c5e3ffcaa3eb8e8f"

@@ -11,8 +11,7 @@ FROM python:3.14-slim AS backend-build
 ARG POETRY_VERSION=2.4.0
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="${VIRTUAL_ENV}/bin:${PATH}"
-# git is needed to install the locked rsm-schema and rs-files-templates
-# dependencies from their Git URLs.
+# Git is available for Copier's repository-template source.
 RUN apt-get update \
   && apt-get install -y --no-install-recommends git \
   && rm -rf /var/lib/apt/lists/*

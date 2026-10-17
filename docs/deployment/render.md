@@ -32,14 +32,14 @@ git push origin main
 
 ## 2. Pin the repository template
 
-Copier runs the template's finalization tasks as real code inside the container. With
-`RS_TOOLS_REPOSITORY_TEMPLATE_REVISION` left at `main`, every repository generation fetches and
-executes whatever is on that branch at that moment, so anyone who can push to the template
-repository can run code in your production service.
+Copier runs the template's finalization tasks as real code inside the container. By default,
+`RS_TOOLS_REPOSITORY_TEMPLATE_REVISION` uses the `v1.0.0` release of
+[rs-repo-templates](https://github.com/LUMC-DCC/rs-repo-templates).
 
-For a public deployment, tag a reviewed revision of
-[rs-repo-templates](https://github.com/LUMC-DCC/rs-repo-templates) and set the variable to that tag
-rather than a branch. Review each revision change as a release step. See the
+Keep a reviewed release tag rather than a moving branch such as `main`, which executes whatever
+is on that branch at generation time. Existing deployments with an explicit `main` override
+should change it to `v1.0.0`; updating the application does not replace environment overrides.
+Review each revision change as a release step. See the
 [security boundaries](production.md#security-boundaries).
 
 ## 3. Create the Blueprint

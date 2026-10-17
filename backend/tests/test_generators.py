@@ -40,7 +40,7 @@ def test_repository_generator_uses_selected_configured_template(
 
     assert received["source"] == "https://github.com/LUMC-DCC/rs-repo-templates.git"
     assert received["data"] == {"project_slug": "sample.project", "template_type": "r"}
-    assert received["vcs_ref"]
+    assert received["vcs_ref"] == "v1.0.0"
     assert received["defaults"] is True
     assert received["unsafe"] is True
     with zipfile.ZipFile(BytesIO(artifact.content)) as archive:
