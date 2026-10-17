@@ -33,6 +33,7 @@ def test_repository_generator_uses_selected_configured_template(
         (destination / ".git" / "config").write_text("ignored", encoding="utf-8")
 
     monkeypatch.setattr("rs_tools.generators.repository.run_copy", fake_run_copy)
+    monkeypatch.setattr("rs_tools.config.DEFAULT_REPOSITORY_TEMPLATE_REVISION", "reviewed-release")
 
     artifact = generate_repository(
         {"project_slug": "sample.project"}, GeneratorOptions(template_id="r")
@@ -40,7 +41,7 @@ def test_repository_generator_uses_selected_configured_template(
 
     assert received["source"] == "https://github.com/LUMC-DCC/rs-repo-templates.git"
     assert received["data"] == {"project_slug": "sample.project", "template_type": "r"}
-    assert received["vcs_ref"]
+    assert received["vcs_ref"] == "reviewed-release"
     assert received["defaults"] is True
     assert received["unsafe"] is True
     with zipfile.ZipFile(BytesIO(artifact.content)) as archive:

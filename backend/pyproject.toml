@@ -33,7 +33,7 @@ dependencies = [
     "cryptography>=46,<47",
     "httpx>=0.28,<1.0",
     "rsm-schema>=1.0.0,<2.0",
-    "rs-files-templates @ git+https://github.com/LUMC-DCC/rs-files-templates.git@c4b5241eccbcc6af19a0cae60e324c01ea0e69a6",
+    "rs-files-templates>=1.0.0,<2.0",
     "copier>=9.17.2,<10.0",
 ]
 

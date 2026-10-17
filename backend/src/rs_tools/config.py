@@ -16,8 +16,7 @@ from urllib.parse import urlsplit
 from rs_tools.generators.base import RepositoryTemplateSource
 
 DEFAULT_REPOSITORY_TEMPLATE_URL = "https://github.com/LUMC-DCC/rs-repo-templates.git"
-# Development default; use a version tag once template releases are available.
-DEFAULT_REPOSITORY_TEMPLATE_REVISION = "main"
+DEFAULT_REPOSITORY_TEMPLATE_REVISION = "v1.0.0"
 
 
 def _positive_int(name: str, default: int) -> int:
@@ -213,8 +212,9 @@ class Settings:
         metadata={"description": "Trusted Copier repository used for project scaffolds."},
     )
     repository_template_revision: str = field(
-        default_factory=lambda: os.getenv(
-            "RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", DEFAULT_REPOSITORY_TEMPLATE_REVISION
+        default_factory=lambda: (
+            os.getenv("RS_TOOLS_REPOSITORY_TEMPLATE_REVISION", "").strip()
+            or DEFAULT_REPOSITORY_TEMPLATE_REVISION
         ),
         metadata={"description": "Git branch, tag, or commit of the Copier repository."},
     )

@@ -62,6 +62,12 @@ The trusted source and template version are application configuration:
 - `RS_TOOLS_REPOSITORY_TEMPLATE_URL`
 - `RS_TOOLS_REPOSITORY_TEMPLATE_REVISION`
 
+To upgrade the built-in template release, change only
+`DEFAULT_REPOSITORY_TEMPLATE_REVISION` in `backend/src/rs_tools/config.py`.
+Compose inherits that default, and the configuration reference reads it from `Settings`.
+An explicit environment override continues to take precedence; unset or blank values
+use the application default.
+
 Copier's native `COPIER_CACHE_DIR` controls the reusable Git mirror. Compose mounts that cache on a
 named volume. Add supported scaffolds to `REPOSITORY_TEMPLATES`; both the API and interface
 selector read that tuple, while the selected identifier is passed to Copier as `template_type`.

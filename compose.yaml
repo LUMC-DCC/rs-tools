@@ -19,7 +19,8 @@ services:
       RS_TOOLS_RATE_LIMIT_HEAVY_REQUESTS: ${RS_TOOLS_RATE_LIMIT_HEAVY_REQUESTS:-10}
       RS_TOOLS_RATE_LIMIT_WINDOW_SECONDS: ${RS_TOOLS_RATE_LIMIT_WINDOW_SECONDS:-60}
       RS_TOOLS_REPOSITORY_TEMPLATE_URL: ${RS_TOOLS_REPOSITORY_TEMPLATE_URL:-https://github.com/LUMC-DCC/rs-repo-templates.git}
-      RS_TOOLS_REPOSITORY_TEMPLATE_REVISION: ${RS_TOOLS_REPOSITORY_TEMPLATE_REVISION:-main}
+      # Empty means use the application's default release, not a separate Compose pin.
+      RS_TOOLS_REPOSITORY_TEMPLATE_REVISION: ${RS_TOOLS_REPOSITORY_TEMPLATE_REVISION:-}
       # Copier stores a Git mirror here and creates temporary worktrees from it.
       COPIER_CACHE_DIR: /var/cache/rs-tools/copier
       RS_TOOLS_GITHUB_CLIENT_ID: ${RS_TOOLS_GITHUB_CLIENT_ID:-}

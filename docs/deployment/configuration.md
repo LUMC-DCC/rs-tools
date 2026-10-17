@@ -18,9 +18,10 @@ generated from `rs_tools.config.Settings`; adding a setting without a descriptio
   for real cross-origin browser clients.
 - Mount secrets and use `_FILE` variables where the platform supports them. Setting an inline
   secret and its `_FILE` counterpart together is an error.
-- `RS_TOOLS_REPOSITORY_TEMPLATE_REVISION` accepts a branch, tag, or commit. Use a
-  reviewed version tag for deployments. Copier executes finalization tasks from
-  this source.
+- `RS_TOOLS_REPOSITORY_TEMPLATE_REVISION` accepts a branch, tag, or commit. Leave it
+  unset or blank to use the application's release default shown in the table above.
+  Only set it to deliberately override that default, using a reviewed version tag
+  for deployments. Copier executes finalization tasks from this source.
 
 Copier owns its clone cache through `COPIER_CACHE_DIR`. The image sets it to a directory the
 runtime user can write to, and Compose additionally backs that path with a persistent volume so the
